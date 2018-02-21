@@ -19,3 +19,4 @@ talk.politics.guns,0.73,0.65,0.68,0.65,TF-IDF
 talk.politics.mideast,0.8,0.8,0.8,0.76,"TF-IDF,W2V,Fasttext"
 talk.politics.misc,0.4,0.57,0.57,0.54,"W2V,Fasttext"
 talk.religion.misc,0.03,0.15,0.44,0.14,Fasttext
+avg,0.68,0.66,0.7,0.64,Fasttext
