@@ -11773,10 +11773,11 @@ div#notebook {
 
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">gensim</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">classification_report</span>
 <span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="k">import</span> <span class="n">fetch_20newsgroups</span>
@@ -11799,13 +11800,63 @@ div#notebook {
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>C:\Users\Arfat\Anaconda3\lib\site-packages\gensim\utils.py:860: UserWarning: detected Windows; aliasing chunkize to chunkize_serial
+  warnings.warn(&#34;detected Windows; aliasing chunkize to chunkize_serial&#34;)
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">Classify20</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">avgfolds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">txt</span><span class="p">):</span>
+        <span class="n">x1</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">txt</span><span class="o">+</span><span class="s2">&quot;0.csv&quot;</span><span class="p">)</span>
+        <span class="n">x2</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">txt</span><span class="o">+</span><span class="s2">&quot;1.csv&quot;</span><span class="p">)</span>
+        <span class="n">x3</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">txt</span><span class="o">+</span><span class="s2">&quot;2.csv&quot;</span><span class="p">)</span>
+        <span class="n">X</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">x1</span><span class="p">,</span><span class="n">x2</span><span class="p">,</span><span class="n">x3</span><span class="p">))</span>
+        <span class="n">by_row_index</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="n">df_means</span> <span class="o">=</span> <span class="n">by_row_index</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">n</span><span class="o">=</span><span class="n">df_means</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">n</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">column</span><span class="o">=</span><span class="s1">&#39;Class&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">twenty_all</span><span class="o">.</span><span class="n">target_names</span><span class="p">)</span>
+        <span class="c1">#n=n.drop(&#39;Support&#39;,axis=1)</span>
+        <span class="n">n</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;20&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">n</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">n</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;20&#39;</span><span class="p">,</span><span class="s1">&#39;Class&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;avg&#39;</span>
+        <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">n</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">txt</span><span class="o">+</span><span class="s1">&#39;consolidate.csv&#39;</span><span class="p">,</span><span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">reporttocsv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">txt</span><span class="p">,</span><span class="n">i</span><span class="p">):</span>
+        <span class="n">report_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">x</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">3</span><span class="p">]:</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">d</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;(\d+(\.\d{1,2})?|\d+)&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+            <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">twenty_all</span><span class="o">.</span><span class="n">target_names</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+            <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Precision&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Recall&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">row</span><span class="p">[</span><span class="s1">&#39;F1_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Support&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">report_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span>
+        <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">report_data</span><span class="p">)</span>
+        <span class="n">dataframe</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">txt</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;.csv&#39;</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">myTokenizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">text</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">nltk</span><span class="o">.</span><span class="n">regexp_tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">b[a-zA-Z]{3,}</span><span class="se">\\</span><span class="s2">b&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">tokenizeContents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">contents</span><span class="p">):</span>
@@ -11887,7 +11938,9 @@ div#notebook {
             <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">[</span><span class="n">train_index</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">train_index</span><span class="p">])</span>
             <span class="n">y_pred</span><span class="o">=</span><span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">[</span><span class="n">test_index</span><span class="p">])</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fold :&quot;</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">test_index</span><span class="p">],</span><span class="n">target_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">twenty_all</span><span class="o">.</span><span class="n">target_names</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="o">=</span><span class="n">classification_report</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">test_index</span><span class="p">],</span><span class="n">y_pred</span><span class="p">,</span><span class="n">target_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">twenty_all</span><span class="o">.</span><span class="n">target_names</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reporttocsv</span><span class="p">(</span><span class="s1">&#39;w2v&#39;</span><span class="p">,</span><span class="n">i</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avgfolds</span><span class="p">(</span><span class="s1">&#39;w2v&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">tfidf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="c1">##################              TF-IDF</span>
         <span class="n">tfvec</span><span class="o">=</span><span class="n">TfidfVectorizer</span><span class="p">(</span><span class="n">ngram_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
@@ -11898,7 +11951,9 @@ div#notebook {
             <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">train_index</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">train_index</span><span class="p">])</span>
             <span class="n">y_pred</span><span class="o">=</span><span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">test_index</span><span class="p">])</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fold :&quot;</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">test_index</span><span class="p">],</span><span class="n">target_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">twenty_all</span><span class="o">.</span><span class="n">target_names</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="o">=</span><span class="n">classification_report</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">test_index</span><span class="p">],</span><span class="n">y_pred</span><span class="p">,</span><span class="n">target_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">twenty_all</span><span class="o">.</span><span class="n">target_names</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reporttocsv</span><span class="p">(</span><span class="s1">&#39;tfidf&#39;</span><span class="p">,</span><span class="n">i</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avgfolds</span><span class="p">(</span><span class="s1">&#39;tfidf&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">ftext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cmd</span><span class="p">):</span>
     <span class="c1">##################              Fast text</span>
         <span class="n">cmd1</span><span class="o">=</span><span class="s2">&quot;C:/Users/Arfat/Downloads/Compressed/amazonreviews/fasttext supervised &quot;</span>
@@ -11945,11 +12000,45 @@ div#notebook {
             <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;result20.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
             <span class="n">lines</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s1">&#39;\d+&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)))</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()])</span>
             <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">test_index</span><span class="p">],</span><span class="n">target_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">twenty_all</span><span class="o">.</span><span class="n">target_names</span><span class="p">))</span>
-
-
-    
-    
+            <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="o">=</span><span class="n">classification_report</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">test_index</span><span class="p">],</span><span class="n">lines</span><span class="p">,</span><span class="n">target_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">twenty_all</span><span class="o">.</span><span class="n">target_names</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reporttocsv</span><span class="p">(</span><span class="s1">&#39;fasttext&#39;</span><span class="p">,</span><span class="n">i</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avgfolds</span><span class="p">(</span><span class="s1">&#39;fasttext&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wtw2v</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1">####TFIDF weighted w2v</span>
+        <span class="n">tfvec</span><span class="o">=</span><span class="n">TfidfVectorizer</span><span class="p">()</span>
+        <span class="n">X</span><span class="o">=</span><span class="n">tfvec</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">full</span><span class="p">)</span>
+        <span class="n">fn</span><span class="o">=</span><span class="n">tfvec</span><span class="o">.</span><span class="n">get_feature_names</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">docvec</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">18298</span><span class="p">,</span><span class="mi">300</span><span class="p">))</span>
+        <span class="n">tx</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">full</span><span class="p">)):</span>
+            <span class="n">add</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
+            <span class="n">totalwt</span><span class="o">=</span><span class="mi">0</span>
+            <span class="n">feature_index</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">doc</span><span class="p">,:]</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1">#print (feature_index)</span>
+            <span class="n">tfidf_scores</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">feature_index</span><span class="p">,</span> <span class="p">[</span><span class="n">X</span><span class="p">[</span><span class="n">doc</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">feature_index</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">fn</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="ow">in</span> <span class="n">tfidf_scores</span><span class="p">]:</span>
+                <span class="n">totalwt</span><span class="o">=</span><span class="n">totalwt</span><span class="o">+</span><span class="nb">round</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+                <span class="c1">#print (w, s)</span>
+                <span class="k">try</span><span class="p">:</span> 
+                    <span class="n">add</span><span class="o">=</span><span class="n">add</span><span class="o">+</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">word_vec</span><span class="p">(</span><span class="n">w</span><span class="p">))</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="c1">#totalwt=totalwt-round(s,2)</span>
+                    <span class="k">continue</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">docvec</span><span class="p">[</span><span class="n">doc</span><span class="p">]</span><span class="o">=</span><span class="n">add</span><span class="o">/</span><span class="n">totalwt</span>
+                <span class="n">tx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">totalwt</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span><span class="n">totalwt</span><span class="p">)</span>
+                <span class="k">continue</span>
+        <span class="c1">#print(self.docvec)</span>
+        <span class="c1">#print(tx)</span>
+        <span class="n">clf</span><span class="o">=</span><span class="n">LinearSVC</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,(</span><span class="n">train_index</span><span class="p">,</span> <span class="n">test_index</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">skf</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">docvec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)):</span>
+            <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">docvec</span><span class="p">[</span><span class="n">train_index</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">train_index</span><span class="p">])</span>
+            <span class="n">y_pred</span><span class="o">=</span><span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">docvec</span><span class="p">[</span><span class="n">test_index</span><span class="p">])</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fold :&quot;</span><span class="p">,</span><span class="n">k</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">report</span><span class="o">=</span><span class="n">classification_report</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">test_index</span><span class="p">],</span><span class="n">y_pred</span><span class="p">,</span><span class="n">target_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">twenty_all</span><span class="o">.</span><span class="n">target_names</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reporttocsv</span><span class="p">(</span><span class="s1">&#39;wtw2v&#39;</span><span class="p">,</span><span class="n">i</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">avgfolds</span><span class="p">(</span><span class="s1">&#39;wtw2v&#39;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -11959,7 +12048,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">c20</span><span class="o">=</span><span class="n">Classify20</span><span class="p">()</span>
@@ -11972,7 +12061,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">c20</span><span class="o">.</span><span class="n">preprocess</span><span class="p">()</span>
@@ -11985,7 +12074,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">c20</span><span class="o">.</span><span class="n">tfidf</span><span class="p">()</span>
@@ -11995,10 +12084,30 @@ div#notebook {
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Fold : 0
+Fold : 1
+Fold : 2
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">c20</span><span class="o">.</span><span class="n">w2v</span><span class="p">()</span>
@@ -12008,16 +12117,89 @@ div#notebook {
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Fold : 0
+Fold : 1
+Fold : 2
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">c20</span><span class="o">.</span><span class="n">ftext</span><span class="p">(</span><span class="s1">&#39;-dim 100 -epoch 100&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">c20</span><span class="o">.</span><span class="n">ftext</span><span class="p">(</span><span class="s2">&quot;-dim 100 -epoch 100&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>6105
+6101
+6092
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">c20</span><span class="o">.</span><span class="n">wtw2v</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Fold : 0
+Fold : 1
+Fold : 2
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
